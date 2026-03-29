@@ -1606,10 +1606,18 @@ async function fetchSolarFromPanelApi(forceRefresh = false) {
   }
   return payload;
 }
-
 async function fetchSolarFromLocalBridge() {
-  return null;
+  const hostname = window.location.hostname;
+  if (hostname !== "127.0.0.1" && hostname !== "localhost") {
+    return null;
+  }
+  const bridgePayload = await fetchJsonWithTimeout("http://127.0.0.1:8091/api/solar", 8000);
+  if (!bridgePayload || bridgePayload.error) {
+    return null;
+  }
+  return bridgePayload;
 }
+
 
 function canUseNotificationBridge() {
   const hostname = String(window.location.hostname || "").toLowerCase();
